@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:3001');
+var socket = io.connect('http://10.0.1.6:3001');
 
 var Chat = (function(){
     var chat,
@@ -9,7 +9,7 @@ var Chat = (function(){
         userID,
         self = this;
 
-    this.username = false;
+    var USER = {}
 
     function attachEvents(){
         var self = this;
@@ -17,8 +17,8 @@ var Chat = (function(){
             if(e.keyCode === 13){
                 var el = $(this);
                 var message = el.val()
-                var user = self.user
-                socket.emit('sendMessage', {user : self.username, message : message});
+                var user = USER.name
+                socket.emit('sendMessage', {user : user, message : message});
                 el.val('');
             }
         });
@@ -28,65 +28,27 @@ var Chat = (function(){
                 var el = $(this);
                 var username = el.val()
                 socket.emit('updateUser', username)
-                self.username = username;
+                USER.name = username;
                 el.val('')
                 activity('you are now "' + username+'"');
             }
-        });
-
-        $(document).on('click', '[trigger-video]', function(e){
-            var userID = $(this).attr('userid')
-            triggerVideoChat(userID);
         });
 
         $('#set-notifications').on('click', function(e){
             setNotifications()
         });
 
-        // socket events
-        socket.on('connect', function(client){ 
-            socket.on('setClientID', function(id){
-                //cache current users id
-                userID = id;
+        $(document).on('click', '[trigger-private]', function(e){
+            e.preventDefault();
+            var id = $(this).attr('userid');
+            var room = createRoom();
+            socket.emit('invite', {
+                remoteID : id,
+                userID : USER.id,
+                userName : USER.name,
+                room : room
             });
-
-            socket.on('userEntered', function(data){
-                console.log('user entered')
-                // add the user to the list
-                addUser(data.id)
-                activity(data.id + ' has entered the room.')
-            });
-
-            socket.on('userList', function(data){
-                console.log('data', data)
-                for(var i in data){
-                    user = data[i].nickname || i;
-                    addUser(user);
-                }
-            });
-
-            socket.on('userLeft', function(data){
-                //remove the user from the user list
-                var user = $('[userid='+data.id+']')
-                var username = user.length ? user.text() : data.id
-                removeUser(data.id);
-                activity(username + ' has left the room.')
-            });
-
-            socket.on('privateInvite', function(data){
-                if(confirm('Would you like to video chat with ' + data.user + '?')){
-                    console.log(data.id)
-                   $('[userid="'+data.id+'"]').modal('show');
-                }
-            });
-
-            socket.on('chatUpdate', function(data){
-                updateChat(data.user, data.message);
-            });
-
-            socket.on('userUpdate', function(data){
-                updateUserList(data.id, data.user);           
-            });
+           window.location.href = '/private/#'+room;
         });
     }
 
@@ -94,7 +56,7 @@ var Chat = (function(){
         user = userList.find('[userid='+id+']');
 
         if(!user.length){
-            userList.append('<li><a href="#video-modal" trigger-video="true" userid="'+id+'" data-toggle="modal">'+id+'</a></li>');
+            userList.append('<li><a href="/private/#'+id+'" target="_blank" userid="'+id+'" trigger-private="true">'+unescape(id)+'</a></li>');
         }
     }
 
@@ -108,8 +70,8 @@ var Chat = (function(){
         parent[0].scrollTop = parent[0].scrollHeight;
         
         //if the user isn't the sender, then trigger a notification
-        if(this.id !== user && this.username !== user){
-            this.triggerNotification(user, message)
+        if(USER.id !== user && USER.name !== user){
+            triggerNotification(user, message)
         }
     }
 
@@ -126,7 +88,7 @@ var Chat = (function(){
     }
 
     function updateUserList(id, username){
-        user = userList.find('[userid='+id+']');
+        user = userList.find('[userid='+escape(id)+']');
         if(user.length){
             user.text(username);
         }
@@ -139,10 +101,61 @@ var Chat = (function(){
         }
     }
 
-    function triggerVideoChat(user) {
-        user = username || user
-        VideoChat.start({name : user, id : userID});
+    function createRoom(){
+        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+        var string_length = 8;
+        var randomstring = '';
+        for (var i=0; i<string_length; i++) {
+          var rnum = Math.floor(Math.random() * chars.length);
+          randomstring += chars.substring(rnum,rnum+1);
+        }
+
+        return randomstring;
     }
+
+    // socket events
+    socket.on('setClientID', function(id){
+        //cache current users id
+        USER.id = id;
+        USER.name = id;
+    });
+
+    socket.on('userEntered', function(data){
+        console.log('user entered')
+        // add the user to the list
+        addUser(data.id)
+        activity(data.id + ' has entered the room.')
+    });
+
+    socket.on('userList', function(data){
+        console.log('data', data)
+        for(var i in data){
+            user = data[i].nickname || i;
+            addUser(user);
+        }
+    });
+
+    socket.on('userLeft', function(data){
+        //remove the user from the user list
+        var user = $('[userid='+data.id+']')
+        var username = user.length ? user.text() : data.id
+        removeUser(data.id);
+        activity(username + ' has left the room.')
+    });
+
+    socket.on('privateInvite', function(data){
+        if(confirm('Would you like to video chat with ' + data.userName + '?')){
+            window.location.href = '/private/#'+data.room;
+        }
+    });
+
+    socket.on('chatUpdate', function(data){
+        updateChat(data.user, data.message);
+    });
+
+    socket.on('userUpdate', function(data){
+        updateUserList(data.id, data.user);           
+    });
 
     // public methods
     return {
@@ -160,4 +173,8 @@ var Chat = (function(){
             }
         }
     };
+
+
 })();
+
+

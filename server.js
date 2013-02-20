@@ -11,13 +11,6 @@ var express = require('express')
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
-  // app.set('views', __dirname + '/views');
-  // app.set('view engine', 'jade');
-  // app.use(express.favicon());
-  // app.use(express.logger('dev'));
-  // app.use(express.bodyParser());
-  // app.use(express.methodOverride());
-  // app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
@@ -32,7 +25,7 @@ var webRTC = require('webrtc.io').listen(server);
 var io = require('socket.io').listen(3001);
 
 // client object
-var clients = {}
+var clients = {};
 
 io.sockets.on('connection', function (socket) {
   // ------ CHAT
@@ -41,9 +34,9 @@ io.sockets.on('connection', function (socket) {
 
   //immediately tell the chat room someone has connected
   socket.broadcast.emit('userEntered', {id : socket.id});
+  socket.broadcast.emit('userList', clients);
   socket.emit('userList', clients);
   socket.emit('setClientID', socket.id);
-
   socket.on('sendMessage', function (data) {
     var message = data.message || '';
     var user = data.user || socket.id;
@@ -62,13 +55,14 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function(){
+    console.log('DISCONNECT')
     delete clients[socket.id];
     socket.broadcast.emit('userLeft', {id : socket.id})
     socket.emit('userList', clients);
   });
 
   socket.on('invite', function(data){
-    io.sockets.sockets[data.user].emit('privateInvite', data);
+    io.sockets.sockets[data.remoteID].emit('privateInvite', data);
   })
 
 });
@@ -83,5 +77,13 @@ app.get('/', function(req, res) {
   res.header({'Content-Type' : 'text/html'});
   res.send(fs.readFileSync(__dirname + '/index.html'));
 });
+
+app.get('/private', function(req, res) {
+  res.header({'Content-Type' : 'text/html'});
+  res.send(fs.readFileSync(__dirname + '/private.html'));
+});
+
+
+
 
 
