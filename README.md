@@ -5,5 +5,5 @@ The Future is Now - SXSW 2013 workshop
 
 ## Development
 * In Terminal, navigate to root project directory
-* Run 'node server.js'
-* Go to http://localhost:8000 in your browser
+* Run `node server.js`
+* Go to http://localhost:3000 in your browser
