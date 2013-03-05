@@ -45,7 +45,8 @@ var VideoChat = (function(){
 		    }
 		    else{
 		      alert('Your browser is not supported or you have to turn on flags. In chrome you go to chrome://flags and turn on Enable PeerConnection remember to restart chrome');
-		    } 
+		    }
+		    
     		var url = "ws:"+window.location.href.substring(window.location.protocol.length);
 		    var hash = url.indexOf('#');
 		    url = (hash !== -1) ? url.substring(0, hash) : url;

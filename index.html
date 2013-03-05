@@ -11,8 +11,7 @@
         <link rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.css">
         <script src="/js/vendor/jquery.min.js"></script>
         <script src="/js/vendor/socket.io/socket.io.min.js"></script>
-        <script src="/js/vendor/webrtc.io.js"></script>
-        <script src="chat.js"></script>
+        <script src="chat-final.js"></script>
         <script src="/bootstrap/js/bootstrap.js"></script>
     </head>
     <body>
@@ -35,7 +34,7 @@
                 </div>
                 <div class="row-fluid">
                     <input type="text" id="chat-input" class="span9" />
-                    <button id="set-notifications">Allow Desktop Notifications</button>
+                    <button id="set-notifications">Allow Notifications</button>
                 </div>
                 <div class="row-fluid">
                     <input type="text" id="username-input" class="span3" placeholder="set your user name" />
@@ -44,7 +43,7 @@
         </div>
 <script>
 $(function(){
-   Chat.init();
+   var chat = new Chat();
 });
 </script>
 </body>
