@@ -68,18 +68,19 @@ Chat.prototype.attachEvents = function(){
     });
 }
 
+//add a user to $userList
 Chat.prototype.addUser = function(id){
 
     //add the user to the user list 
 
-
 }
 
+//update the chat when someone says something
 Chat.prototype.updateChat = function(user, message){
 
 }
 
-// update the room that a global message has been recieved
+// update the room with a general message from the server
 Chat.prototype.activity = function(message){
 
 }
@@ -94,6 +95,7 @@ Chat.prototype.setNotificationPermissions = function(e){
 
 }
 
+//show the a notification with the user name and the message 
 Chat.prototype.triggerNotification = function(user, message){
 
 }
