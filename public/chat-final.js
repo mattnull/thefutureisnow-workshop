@@ -46,7 +46,7 @@ Chat.prototype.attachEvents = function(){
 
     //when the Allow Notifications button is clicked, request permission
     $('#set-notifications').on('click', function(e){
-        self.setNotifications()
+        self.setNotificationPermissions()
     });
 
     // socket events
@@ -127,7 +127,7 @@ Chat.prototype.updateUserList = function(list){
 }
 
 //set permissions for notifications
-Chat.prototype.setNotifications = function(e){
+Chat.prototype.setNotificationPermissions = function(e){
     //get permission for notifications
     if (window.webkitNotifications.checkPermission() !== 0) {
         window.webkitNotifications.requestPermission();
@@ -135,6 +135,7 @@ Chat.prototype.setNotifications = function(e){
 }
 
 Chat.prototype.triggerNotification = function(user, message){
+
     if (window.webkitNotifications.checkPermission() == 0) {     
         var notification = window.webkitNotifications.createNotification('', user, message);
         notification.show();

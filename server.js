@@ -28,11 +28,12 @@ var io = require('socket.io').listen(server);
 var clients = {};
 
 io.sockets.on('connection', function (socket) {
+  
   // ------ CHAT
   //when the user connects add them to our users object
   clients[socket.id] = {id : socket.id, nickname : false};
 
-  //immediately tell the chat room someone has connected
+  //immediately tell the chat room someone has connected and to update the list of users
   socket.broadcast.emit('userEntered', {id : socket.id});
   socket.broadcast.emit('updateList', clients);
   socket.emit('updateList', clients);

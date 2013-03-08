@@ -1,102 +1,100 @@
-var socket = io.connect('http://thefutureisnow.nullempire.com:80');
+// Connect to the server
+var socket = io.connect('http://localhost:3000');
 
+//define our chat class
 var Chat = function(){
 
+    //cache DOM elemen references
     this.$chat = $('#chat-window ul'),
     this.$userList = $('#users ul'),
     this.$chatInput = $('#chat-input'),
     this.$userNameInput = $('#username-input');
-
-    this.user = {};
-
+    this.user = {}; //used for caching user info
     this.attachEvents();
 
+    // check to see if notifications are enabled
+    //if not, show the set notifications button
     if (window.webkitNotifications.checkPermission() !== 0) {
         $('#set-notifications').show()
     }
 };
 
 Chat.prototype.attachEvents = function(){
+    
     var self = this;
 
+    //when the enter key is pressed send a message to teh server and clear the input
     this.$chatInput.on('keyup', function(e){
-        if(e.keyCode === 13){
-            var el = $(this);
-            var message = el.val()
-            var user = self.user.name
-            socket.emit('sendMessage', {user : user, message : message});
-            el.val('');
-        }
+
     });
 
+    //when "enter" is pressed, send an update to the server and update your activity in the chat
     this.$userNameInput.on('keyup', function(e){
-        if(e.keyCode === 13){
-            var el = $(this);
-            var username = el.val()
-            socket.emit('updateUser', username)
-            self.user.name = username;
-            el.val('')
-            self.activity('you are now "' + username+'"');
-        }
+
     });
 
+    //when the Allow Notifications button is clicked, request permission
     $('#set-notifications').on('click', function(e){
-        self.setNotifications()
+    
     });
 
-    // socket events
+    // --- socket events
+
+    //initial data from the server about the connected client
+    //cache the user data on the client for future use
     socket.on('setClientID', function(id){
-        //cache current users id
-        self.user.id = id;
-        self.user.name = id;
-    });
-
-    //event from server, when a user has entered the room
-    socket.on('userEntered', function(data){
 
     });
 
-    //event from the server, when the userList needs updated
-    socket.on('roomUpdate', function(data){
+    //when the user list needs updated
+    //this is called when a user enters the room, leaves the room, or changes their user name
+    socket.on('updateList', function(data){
 
     });
 
-    //event from the server, when a user has left the room
+    //when a user leaves the room
     socket.on('userLeft', function(data){
 
     });
 
-    //a new message has been sent to the room
+    //when a user enters the room
+    socket.on('userEntered', function(data){
+  
+    });
+
+    //when the chatroom recieves a message
     socket.on('chatUpdate', function(data){
-    
+
     });
 }
 
 Chat.prototype.addUser = function(id){
-}
 
-Chat.prototype.removeUser = function(id){
+    //add the user to the user list 
+
+
 }
 
 Chat.prototype.updateChat = function(user, message){
 
 }
 
-Chat.prototype.triggerNotification = function(user, message){
-
-}
 // update the room that a global message has been recieved
 Chat.prototype.activity = function(message){
 
 }
 
 //find a user and update their name
-Chat.prototype.updateUserList = function(id, username){
+Chat.prototype.updateUserList = function(list){
 
 }
 
 //set permissions for notifications
-Chat.prototype.setNotifications = function(e){
+Chat.prototype.setNotificationPermissions = function(e){
+
+}
+
+Chat.prototype.triggerNotification = function(user, message){
 
 }
 
