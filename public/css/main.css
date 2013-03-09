@@ -81,7 +81,7 @@ footer{
 		margin:0;
 	}
 #chat-window, #video-chat-window{
-	border:7px solid rgba(204,217,228,1);
+	border:3px solid rgba(204,217,228,1);
 	border-radius:2px;
 	height:500px;
 	background:rgba(255,255,255,0.8);
@@ -95,7 +95,7 @@ footer{
 	overflow:none;
 }
 #users{
-	border:7px solid rgba(204,217,228,1);
+	border:3px solid rgba(204,217,228,1);
 	border-radius:2px;
 	height:500px;
 	background:rgba(255,255,255,0.8);
@@ -107,7 +107,7 @@ footer{
 }
 #chat-input{
 	margin-top:7px;
-	border:7px solid rgba(204,217,228,1);
+	border:3px solid rgba(204,217,228,1);
 	border-radius:2px;
 	background:rgba(255,255,255,0.8);
 	padding:20px 10px;
