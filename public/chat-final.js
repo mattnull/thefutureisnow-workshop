@@ -20,7 +20,6 @@ var Chat = function(){
 Chat.prototype.attachEvents = function(){
     var self = this;
 
-
     //when the enter key is pressed send a message to teh server and clear the input
     this.$chatInput.on('keyup', function(e){
         if(e.keyCode === 13){
